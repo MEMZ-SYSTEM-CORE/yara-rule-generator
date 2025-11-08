@@ -32,7 +32,7 @@ A comprehensive YARA rule generator web application that provides security resea
 
 1. **Clone Repository**
 ```bash
-git clone https://github.com/[your-username]/yara-rule-generator.git
+git clone https://github.com/MEMZ-SYSTEM-CORE/yara-rule-generator.git
 cd yara-rule-generator
 ```
 
@@ -178,7 +178,7 @@ Welcome to submit Issues and Pull Requests to improve this project!
 ### Development Setup
 ```bash
 # Clone project
-git clone https://github.com/[your-username]/yara-rule-generator.git
+git clone https://github.com/MEMZ-SYSTEM-CORE/yara-rule-generator.git
 
 # Create virtual environment
 python -m venv venv
