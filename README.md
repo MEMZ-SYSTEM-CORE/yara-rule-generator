@@ -1,190 +1,213 @@
-# YARA规则生成器
+# YARA Rule Generator - Modern Web Application
 
-这是一个基于Python Flask的Web应用程序，用于帮助安全研究人员和恶意软件分析师快速生成YARA规则。
+A comprehensive YARA rule generator web application that provides security researchers and malware analysts with a modern graphical interface for quickly creating and testing YARA rules.
 
-## 功能特点
+## 🌟 Features
 
-- 🎨 **现代化UI界面** - 美观、响应式的用户界面，支持深色/浅色主题切换
-- ✍️ **手动创建模式** - 完整的手动规则创建功能
-- 📁 **文件分析功能** - 自动分析上传文件并生成建议的YARA字符串
-- 📋 **规则模板** - 预定义的规则模板，快速创建常见类型规则
-- 📚 **规则历史** - 保存和管理历史创建的规则
-- 🧪 **规则验证** - 实时验证YARA规则语法
-- 📥 **规则下载** - 可将生成的规则下载为.yar文件
-- 📋 **一键复制** - 快速复制生成的规则到剪贴板
-- 🏷️ **标签支持** - 为规则添加自定义标签
-- 📊 **进度显示** - 文件分析进度可视化
-- 📋 **条件预设** - 常用条件表达式模板
-- 📋 **批量操作** - 全选/清空建议字符串
+### Core Functions
+- **🎨 Modern UI/UX** - Responsive design with dark/light theme support
+- **✍️ Manual Rule Creation** - Complete form interface supporting text, hex, and regex strings
+- **📁 File Analysis** - Automatic file analysis with intelligent string extraction
+- **🔍 Online File Scanning** - Real-time file scanning using YARA rules
+- **📝 Rule Editor** - Free-form YARA rule writing with syntax validation and formatting
+- **📋 Rule Templates** - Predefined templates (PE, ELF, PDF, Office documents)
+- **📚 Rule History** - Save and manage created rule history
+- **🧪 Rule Validation** - Real-time syntax checking and error prompts
+- **📥 Export Functions** - Support for copying, downloading, and saving rules
 
-## 安装和运行
+### Technical Features
+- Pure frontend implementation, no complex configuration required
+- Drag-and-drop file upload support
+- Real-time progress display
+- Mobile-friendly responsive design
+- Local file storage, no database needed
 
-### 环境要求
+## 🚀 Quick Start
 
+### Requirements
 - Python 3.6+
+- Flask
 
-### 安装步骤
+### Installation Steps
 
-1. 克隆或下载此项目到本地
-2. 安装依赖：
-   ```
-   pip install -r requirements.txt
-   ```
-
-### 运行应用
-
-在项目根目录下执行：
+1. **Clone Repository**
+```bash
+git clone https://github.com/[your-username]/yara-rule-generator.git
+cd yara-rule-generator
 ```
+
+2. **Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+3. **Run Application**
+```bash
 python app.py
 ```
 
-然后在浏览器中访问 `http://127.0.0.1:5000`
+4. **Access Application**
+Open browser and visit `http://127.0.0.1:5000`
 
-## 使用说明
+## 📖 Usage Guide
 
-### 手动创建模式
+### 1. Manual Rule Creation
+- Click "Manual Creation" tab
+- Fill in rule basic information (name, description, author, etc.)
+- Add string definitions (support text, hex, regex)
+- Set condition expressions
+- Click "Generate Rule" button
 
-1. **基本信息**：
-   - 规则名称：必须填写，只能包含字母、数字和下划线，不能以数字开头
-   - 规则描述：可选，对规则功能的简要描述
-   - 作者：可选，规则创建者信息
-   - 标签：可选，用逗号分隔的标签列表
+### 2. File Analysis
+- Click "File Analysis" tab
+- Drag or select file to analyze
+- View system-extracted string suggestions
+- Select needed strings to generate rules
 
-2. **字符串定义**：
-   - 可以添加多个字符串
-   - 支持三种类型：
-     - 文本：普通字符串
-     - 十六进制：十六进制字节模式（如：4D 5A 90）
-     - 正则表达式：正则表达式模式
-   - 每个字符串需要一个名称（以$开头）
+### 3. Rule Editor
+- Click "Rule Editor" tab
+- Write YARA rules directly in text box
+- Use toolbar for formatting, validation, etc.
+- Save rules to history
 
-3. **条件**：
-   - 编写YARA规则的条件表达式
-   - 支持所有YARA条件语法
-   - 使用条件预设快速添加常用条件
+### 4. Online Scanning
+- Click "File Scanner" tab
+- Select file to scan
+- Choose YARA rule to use
+- Click "Start Scan" to view results
 
-4. **生成规则**：
-   - 点击"生成规则"按钮
-   - 可以点击"验证规则"检查语法
-   - 生成的规则会显示在下方
-   - 可以点击"复制规则"按钮将规则复制到剪贴板
-   - 可以点击"下载规则"按钮将规则保存为.yar文件
-   - 可以点击"保存规则"保存到历史记录
+### 5. Using Templates
+- Click "Rule Templates" tab
+- Choose appropriate template type
+- Modify generated rule as needed
 
-### 文件分析模式
+## 🛠️ Project Structure
 
-1. **上传文件**：
-   - 点击"文件分析"标签
-   - 拖拽文件到上传区域或点击"选择文件"按钮
-   - 支持任何类型的文件（PE、ELF、PDF、Office文档等）
+```
+yara-rule-generator/
+├── app.py              # Flask application main file
+├── requirements.txt    # Dependencies list
+├── README.md          # Documentation
+├── CLAUDE.md          # Claude development guide
+├── data/              # Data directory
+│   └── rules_history.json  # Rules history storage
+├── templates/         # HTML templates
+│   └── index.html     # Main page template
+└── static/           # Static resources
+    ├── style.css     # Stylesheet
+    └── script.js     # JavaScript functionality
+```
 
-2. **文件分析**：
-   - 系统会自动分析文件并显示文件信息（文件名、大小、哈希值等）
-   - 对于文本文件，会提取函数名、类名、字符串常量等
-   - 对于二进制文件，会提取文件头、ASCII字符串等
-   - 显示分析进度
+## 🔧 Tech Stack
 
-3. **基于文件创建规则**：
-   - 使用建议的字符串或手动添加字符串
-   - 填写规则基本信息
-   - 设置条件表达式
-   - 生成并下载规则
+### Backend
+- **Python Flask** - Web framework
+- **JSON** - Data storage
+- **Hashlib** - File hash calculation
 
-### 规则模板模式
+### Frontend
+- **HTML5/CSS3** - Page structure and styling
+- **JavaScript (ES6+)** - Interactive functionality
+- **Font Awesome** - Icon library
+- **Google Fonts** - Typography optimization
 
-1. **选择模板**：
-   - 点击"规则模板"标签
-   - 选择适合的预定义模板：
-     - PE文件检测
-     - ELF文件检测
-     - PDF恶意文件检测
-     - Office恶意文档检测
+### Design Features
+- **Responsive Design** - Adapts to various screen sizes
+- **CSS Variables** - Theme switching support
+- **Modern UI** - Card-based layout, gradient backgrounds
+- **User-Friendly** - Intuitive operation flow
 
-2. **使用模板**：
-   - 点击"使用模板"按钮
-   - 模板会自动填充到手动创建表单
-   - 可以根据需要修改规则内容
+## 🎯 Use Cases
 
-### 规则历史模式
+- **Malware Analysis** - Create detection rules
+- **Threat Hunting** - Build scanning rules
+- **Security Research** - Analyze file characteristics
+- **Education** - Learn YARA syntax
+- **Enterprise Security** - Internal threat detection
 
-1. **查看历史**：
-   - 点击"历史记录"标签
-   - 查看之前创建并保存的规则
+## 🔍 YARA Rule Examples
 
-2. **管理历史**：
-   - 搜索历史记录
-   - 清空历史记录
-
-## 示例
-
-### 手动创建示例
-
-创建一个检测特定文本的简单规则：
-
-1. 规则名称：`example_rule`
-2. 字符串：
-   - 名称：`$a`
-   - 值：`Hello World`
-   - 类型：文本
-3. 条件：`$a`
-4. 点击"生成规则"
-
-生成的规则：
+### PE File Detection
 ```yara
-rule example_rule
-{
+rule pe_detection {
+    meta:
+        description = "Detect PE executable files"
+        author = "Security Analyst"
+
     strings:
-        $a = "Hello World"
+        $mz = "MZ"
+        $pe = "PE\0\0"
+
     condition:
-        $a
+        $mz at 0 and $pe at 0x3c
 }
 ```
 
-### 文件分析示例
+### Malicious PDF Detection
+```yara
+rule malicious_pdf {
+    meta:
+        description = "Detect potentially malicious PDF files"
+        author = "Security Team"
 
-1. 上传一个可执行文件
-2. 系统会自动分析并建议字符串
-3. 选择需要的建议字符串
-4. 填写规则信息
-5. 生成规则
+    strings:
+        $pdf = "%PDF-"
+        $js = "/JavaScript"
+        $open = "/OpenAction"
 
-### 模板使用示例
-
-1. 点击"规则模板"标签
-2. 选择"PE文件检测"模板
-3. 点击"使用模板"按钮
-4. 模板自动填充到手动创建表单
-5. 根据需要修改规则
-6. 生成规则
-
-## 项目结构
-
-```
-yara规则生成器/
-│
-├── app.py              # Flask应用主文件
-├── requirements.txt    # 依赖包列表
-├── README.md           # 说明文档
-├── data/               # 数据目录（历史记录等）
-├── templates/
-│   └── index.html      # 主页面模板
-└── static/
-    ├── style.css       # 样式文件
-    └── script.js       # JavaScript文件
+    condition:
+        $pdf at 0 and ($js or $open)
+}
 ```
 
-## API端点
+## 🚀 Future Plans
 
-- `POST /generate_rule` - 生成YARA规则
-- `POST /analyze_file` - 分析上传文件
-- `POST /download_rule` - 下载YARA规则
-- `POST /validate_rule` - 验证YARA规则
-- `GET /get_template/<type>` - 获取规则模板
-- `POST /save_rule` - 保存规则到历史记录
-- `GET /get_history` - 获取规则历史记录
-- `POST /clear_history` - 清空规则历史记录
-- `POST /search_history` - 搜索规则历史记录
+- [ ] Integrate real YARA engine
+- [ ] Support more file types
+- [ ] Rule performance optimization suggestions
+- [ ] Batch file scanning
+- [ ] Rule sharing functionality
+- [ ] Advanced syntax highlighting
+- [ ] Code auto-completion
+- [ ] Multi-language support
 
-## 许可证
+## 🤝 Contributing
 
-此项目仅供学习和研究使用，请遵守相关法律法规。
+Welcome to submit Issues and Pull Requests to improve this project!
+
+### Development Setup
+```bash
+# Clone project
+git clone https://github.com/[your-username]/yara-rule-generator.git
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate  # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run development server
+python app.py
+```
+
+## 📄 License
+
+This project uses MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [YARA](https://virustotal.github.io/yara/) - Excellent pattern matching engine
+- [Flask](https://flask.palletsprojects.com/) - Lightweight web framework
+- [Font Awesome](https://fontawesome.com/) - Beautiful icon library
+
+## 📞 Contact
+
+For questions or suggestions, please contact via:
+- Submit GitHub Issue
+- Send email to [your-email]
+
+---
+
+**⭐ If this project helps you, please give it a star!**
