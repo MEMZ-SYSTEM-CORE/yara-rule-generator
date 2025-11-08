@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YARA规则生成器 - 现代化安全工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt"></i> YARA规则生成器</h1>
+                <p>轻松创建YARA规则，用于恶意软件检测和文件识别</p>
+            </div>
+            <div class="theme-toggle">
+                <button id="theme-toggle" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="manual">
+                <i class="fas fa-edit"></i> 手动创建
+            </button>
+            <button class="tab-button" data-tab="editor">
+                <i class="fas fa-code"></i> 规则编辑器
+            </button>
+            <button class="tab-button" data-tab="scanner">
+                <i class="fas fa-search"></i> 在线查杀
+            </button>
+            <button class="tab-button" data-tab="file">
+                <i class="fas fa-file-upload"></i> 文件分析
+            </button>
+            <button class="tab-button" data-tab="templates">
+                <i class="fas fa-clone"></i> 规则模板
+            </button>
+            <button class="tab-button" data-tab="history">
+                <i class="fas fa-history"></i> 历史记录
+            </button>
+        </div>
+
+        <div class="tab-content active" id="manual-tab">
+            <form id="rule-form">
+                <div class="form-section">
+                    <h2><i class="fas fa-info-circle"></i> 基本信息</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rule_name">规则名称 *</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-signature"></i>
+                                <input type="text" id="rule_name" name="rule_name" required placeholder="my_custom_rule">
+                            </div>
+                            <small>只能包含字母、数字和下划线，不能以数字开头</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rule_author">作者</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="rule_author" name="rule_author" placeholder="安全研究员">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rule_description">规则描述</label>
+                        <div class="input-with-icon textarea-icon">
+                            <i class="fas fa-align-left"></i>
+                            <textarea id="rule_description" name="rule_description" rows="3" placeholder="描述此规则的用途和检测目标"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags">标签（可选，用逗号分隔）</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-tags"></i>
+                            <input type="text" id="tags" name="tags" placeholder="malware, trojan, ransomware">
+                        </div>
+                        <small>例如：malware, trojan, ransomware</small>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><i class="fas fa-font"></i> 字符串定义</h2>
+                    <div id="strings-container">
+                        <div class="string-item">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>字符串名称</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-font"></i>
+                                        <input type="text" name="string_name[]" placeholder="$a" value="$a">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>字符串值</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-quote-right"></i>
+                                        <input type="text" name="string_value[]" placeholder="示例文本">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>类型</label>
+                                    <div class="select-with-icon">
+                                        <i class="fas fa-code"></i>
+                                        <select name="string_type[]">
+                                            <option value="text">文本</option>
+                                            <option value="hex">十六进制</option>
+                                            <option value="regex">正则表达式</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>操作</label>
+                                    <button type="button" class="remove-string btn-danger" title="删除字符串">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="add-string" class="btn-secondary">
+                        <i class="fas fa-plus"></i> 添加字符串
+                    </button>
+                </div>
+
+                <div class="form-section">
+                    <h2><i class="fas fa-tasks"></i> 条件</h2>
+                    <div class="form-group">
+                        <label for="conditions">条件表达式</label>
+                        <div class="input-with-icon textarea-icon">
+                            <i class="fas fa-code"></i>
+                            <textarea id="conditions" name="conditions" rows="5" placeholder="例如：
+$a or $b
+$a and #b > 3
+any of them
+all of them"></textarea>
+                        </div>
+                        <small>可以使用YARA的所有条件语法</small>
+                    </div>
+
+                    <div class="condition-presets">
+                        <label>常用条件模板：</label>
+                        <div class="preset-buttons">
+                            <button type="button" class="preset-btn" data-condition="any of them">任意匹配</button>
+                            <button type="button" class="preset-btn" data-condition="all of them">全部匹配</button>
+                            <button type="button" class="preset-btn" data-condition="$a or $b">或条件</button>
+                            <button type="button" class="preset-btn" data-condition="$a and $b">与条件</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-cogs"></i> 生成规则
+                    </button>
+                    <button type="button" id="reset-form" class="btn-secondary">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                    <button type="button" id="validate-rule" class="btn-success">
+                        <i class="fas fa-check-circle"></i> 验证规则
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 规则编辑器标签 -->
+        <div class="tab-content" id="editor-tab">
+            <div class="form-section">
+                <h2><i class="fas fa-code"></i> YARA规则编辑器</h2>
+                <p>直接编写和编辑YARA规则：</p>
+
+                <div class="editor-container">
+                    <div class="editor-toolbar">
+                        <button type="button" class="btn-editor" id="format-rule">
+                            <i class="fas fa-magic"></i> 格式化
+                        </button>
+                        <button type="button" class="btn-editor" id="clear-editor">
+                            <i class="fas fa-eraser"></i> 清空
+                        </button>
+                        <button type="button" class="btn-editor" id="load-template-editor">
+                            <i class="fas fa-file-import"></i> 加载模板
+                        </button>
+                        <button type="button" class="btn-editor" id="validate-editor">
+                            <i class="fas fa-check-circle"></i> 验证
+                        </button>
+                        <button type="button" class="btn-editor btn-success" id="save-editor">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                    </div>
+
+                    <textarea id="yara-editor" placeholder="在此输入您的YARA规则..." rows="20"></textarea>
+
+                    <div class="editor-status-bar">
+                        <span id="editor-status">就绪</span>
+                        <span id="cursor-position">行 1, 列 1</span>
+                    </div>
+                </div>
+
+                <div id="editor-validation-result" class="validation-result hidden"></div>
+            </div>
+        </div>
+
+        <!-- 在线查杀标签 -->
+        <div class="tab-content" id="scanner-tab">
+            <div class="form-section">
+                <h2><i class="fas fa-search"></i> 文件扫描</h2>
+                <p>使用YARA规则检测文件：</p>
+
+                <div class="scanner-section">
+                    <h3><i class="fas fa-file-upload"></i> 选择文件</h3>
+                    <div class="upload-area" id="scan-upload-area">
+                        <div class="upload-content">
+                            <div class="upload-icon">
+                                <i class="fas fa-shield-virus"></i>
+                            </div>
+                            <p>拖拽文件到此处或点击选择</p>
+                            <input type="file" id="scan-file-input" accept="*/*">
+                            <button type="button" id="select-scan-file" class="btn-primary">
+                                <i class="fas fa-folder-open"></i> 选择文件
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="scan-file-info" class="file-info hidden">
+                        <h3><i class="fas fa-info-circle"></i> 文件信息</h3>
+                        <div id="scan-file-details"></div>
+                    </div>
+                </div>
+
+                <div class="scanner-section">
+                    <h3><i class="fas fa-crosshairs"></i> 扫描规则</h3>
+                    <div class="rule-selection">
+                        <div class="rule-option">
+                            <input type="radio" id="use-editor-rule" name="rule-source" value="editor" checked>
+                            <label for="use-editor-rule">编辑器规则</label>
+                        </div>
+                        <div class="rule-option">
+                            <input type="radio" id="use-custom-rule" name="rule-source" value="custom">
+                            <label for="use-custom-rule">自定义规则</label>
+                        </div>
+                        <div id="custom-rule-input" class="hidden">
+                            <textarea id="scanner-custom-rule" placeholder="在此输入YARA规则..." rows="8"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scanner-actions">
+                    <button type="button" id="start-scan" class="btn-primary">
+                        <i class="fas fa-play"></i> 开始扫描
+                    </button>
+                    <button type="button" id="clear-scan" class="btn-secondary">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                </div>
+
+                <div id="scan-progress" class="progress-bar hidden">
+                    <div class="progress-fill"></div>
+                    <span class="progress-text">扫描中...</span>
+                </div>
+
+                <div id="scan-results" class="scan-results hidden">
+                    <h3><i class="fas fa-chart-bar"></i> 扫描结果</h3>
+                    <div id="scan-results-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="file-tab">
+            <div class="form-section">
+                <h2><i class="fas fa-file-upload"></i> 文件分析</h2>
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-content">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p>拖拽文件到此处或点击选择文件</p>
+                        <p class="upload-hint">支持多种文件格式：PE, ELF, PDF, 图片, 文本等</p>
+                        <input type="file" id="file-input" accept="*/*" multiple>
+                        <button type="button" id="select-file" class="btn-primary">
+                            <i class="fas fa-folder-open"></i> 选择文件
+                        </button>
+                    </div>
+                </div>
+
+                <div id="file-progress" class="progress-bar hidden">
+                    <div class="progress-fill"></div>
+                    <span class="progress-text">分析中...</span>
+                </div>
+
+                <div id="file-info" class="file-info hidden">
+                    <h3><i class="fas fa-info-circle"></i> 文件信息</h3>
+                    <div id="file-details"></div>
+                    <div class="file-actions">
+                        <button type="button" id="use-suggested" class="btn-success">
+                            <i class="fas fa-arrow-right"></i> 使用建议字符串
+                        </button>
+                        <button type="button" id="analyze-more" class="btn-secondary">
+                            <i class="fas fa-plus-circle"></i> 分析更多文件
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2><i class="fas fa-edit"></i> 基于文件的规则创建</h2>
+                <form id="file-rule-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="file_rule_name">规则名称 *</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-signature"></i>
+                                <input type="text" id="file_rule_name" name="file_rule_name" required placeholder="file_analysis_rule">
+                            </div>
+                            <small>只能包含字母、数字和下划线，不能以数字开头</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="file_rule_author">作者</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="file_rule_author" name="file_rule_author" placeholder="安全研究员">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file_rule_description">规则描述</label>
+                        <div class="input-with-icon textarea-icon">
+                            <i class="fas fa-align-left"></i>
+                            <textarea id="file_rule_description" name="file_rule_description" rows="3" placeholder="描述此规则的用途和检测目标"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file_tags">标签（可选，用逗号分隔）</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-tags"></i>
+                            <input type="text" id="file_tags" name="file_tags" placeholder="malware, trojan, ransomware">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-lightbulb"></i> 建议的字符串</label>
+                        <div class="suggested-strings-header">
+                            <div class="suggested-strings-count">共找到 <span id="suggested-count">0</span> 个建议</div>
+                            <div class="suggested-strings-actions">
+                                <button type="button" id="select-all-suggested" class="btn-small">
+                                    <i class="fas fa-check-square"></i> 全选
+                                </button>
+                                <button type="button" id="clear-all-suggested" class="btn-small btn-secondary">
+                                    <i class="fas fa-times-circle"></i> 清空
+                                </button>
+                            </div>
+                        </div>
+                        <div id="suggested-strings-container"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file_conditions">条件表达式</label>
+                        <div class="input-with-icon textarea-icon">
+                            <i class="fas fa-code"></i>
+                            <textarea id="file_conditions" name="file_conditions" rows="5" placeholder="例如：
+any of them
+all of them
+$header"></textarea>
+                        </div>
+
+                        <div class="condition-presets">
+                            <label>常用条件模板：</label>
+                            <div class="preset-buttons">
+                                <button type="button" class="preset-btn" data-condition="any of them">任意匹配</button>
+                                <button type="button" class="preset-btn" data-condition="all of them">全部匹配</button>
+                                <button type="button" class="preset-btn" data-condition="$header">匹配文件头</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="generate-file-rule" class="btn-primary">
+                            <i class="fas fa-cogs"></i> 生成规则
+                        </button>
+                        <button type="button" id="reset-file-form" class="btn-secondary">
+                            <i class="fas fa-redo"></i> 重置
+                        </button>
+                        <button type="button" id="validate-file-rule" class="btn-success">
+                            <i class="fas fa-check-circle"></i> 验证规则
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-content" id="templates-tab">
+            <div class="form-section">
+                <h2><i class="fas fa-clone"></i> 规则模板</h2>
+                <p>选择预定义的规则模板，快速创建常见类型的YARA规则：</p>
+
+                <div class="templates-grid">
+                    <div class="template-card" data-template="pe">
+                        <div class="template-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <h3>PE文件检测</h3>
+                        <p>检测Windows可执行文件的模板</p>
+                        <button class="btn-template-use">使用模板</button>
+                    </div>
+
+                    <div class="template-card" data-template="elf">
+                        <div class="template-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <h3>ELF文件检测</h3>
+                        <p>检测Linux可执行文件的模板</p>
+                        <button class="btn-template-use">使用模板</button>
+                    </div>
+
+                    <div class="template-card" data-template="pdf">
+                        <div class="template-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>PDF恶意文件</h3>
+                        <p>检测恶意PDF文件的模板</p>
+                        <button class="btn-template-use">使用模板</button>
+                    </div>
+
+                    <div class="template-card" data-template="office">
+                        <div class="template-icon">
+                            <i class="fas fa-file-word"></i>
+                        </div>
+                        <h3>Office恶意文档</h3>
+                        <p>检测恶意Office文档的模板</p>
+                        <button class="btn-template-use">使用模板</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="history-tab">
+            <div class="form-section">
+                <h2><i class="fas fa-history"></i> 规则历史</h2>
+                <p>查看和管理之前创建的规则：</p>
+
+                <div class="history-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="history-search" placeholder="搜索规则名称或描述...">
+                    </div>
+                    <button id="clear-history" class="btn-danger">
+                        <i class="fas fa-trash"></i> 清空历史
+                    </button>
+                </div>
+
+                <div id="rules-history-container">
+                    <div class="empty-history">
+                        <i class="fas fa-inbox"></i>
+                        <p>暂无历史记录</p>
+                        <p>创建规则后会自动保存到这里</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-section" class="hidden">
+            <div class="result-header">
+                <h2><i class="fas fa-file-code"></i> 生成的YARA规则</h2>
+                <div class="result-status">
+                    <span id="rule-status" class="status-success">
+                        <i class="fas fa-check"></i> 规则生成成功
+                    </span>
+                </div>
+            </div>
+            <div class="result-actions">
+                <button id="copy-rule" class="btn-secondary">
+                    <i class="fas fa-copy"></i> 复制规则
+                </button>
+                <button id="download-rule" class="btn-primary">
+                    <i class="fas fa-download"></i> 下载规则
+                </button>
+                <button id="test-rule" class="btn-success">
+                    <i class="fas fa-vial"></i> 测试规则
+                </button>
+                <button id="save-rule" class="btn-info">
+                    <i class="fas fa-save"></i> 保存规则
+                </button>
+            </div>
+            <div class="result-content">
+                <pre id="generated-rule"></pre>
+                <div id="rule-validation-result" class="validation-result hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
